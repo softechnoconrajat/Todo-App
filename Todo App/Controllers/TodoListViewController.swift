@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class TodoListViewController: UITableViewController{
+class TodoListViewController: SwipeTableViewController {
     
 //    var defaults = UserDefaults.standard
     
@@ -28,7 +28,15 @@ class TodoListViewController: UITableViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-      
+        tableView.rowHeight = 80.0
+    }
+    
+    
+    //MARK: - Delete Section, delete data from swipe
+    
+    override func update(at indexPath: IndexPath) {
+        self.context.delete(self.itemArray[indexPath.row])
+        self.itemArray.remove(at: indexPath.row)
     }
     
     //MARK: - TableView Data Source Method
@@ -39,7 +47,10 @@ class TodoListViewController: UITableViewController{
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
+//        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
        // cell.textLabel?.text = itemArray[indexPath.row]
         
         let item = itemArray[indexPath.row]
@@ -50,7 +61,6 @@ class TodoListViewController: UITableViewController{
         //Value = condition?return value if True:return value if False
         
         cell.accessoryType = item.done ? .checkmark : .none
-        
         
         return cell
     }

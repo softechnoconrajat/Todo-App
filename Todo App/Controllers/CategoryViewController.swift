@@ -8,17 +8,22 @@
 
 import UIKit
 import CoreData
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
      var categories = [Category]()
     
+
      let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         load()
+        
+        tableView.rowHeight = 80.0
+        tableView.separatorStyle = .none
 
        
     }
@@ -35,6 +40,7 @@ class CategoryViewController: UITableViewController {
             
             let newItem = Category(context: self.context )
             newItem.name = textField.text!
+            newItem.color = UIColor.randomFlat.hexValue()
 
            self.categories.append(newItem)
             self.saveItems()
@@ -52,7 +58,7 @@ class CategoryViewController: UITableViewController {
         
     }
     
-    // Save  Items
+    // MARK: -Save  Items
     
     func saveItems(){
         
@@ -65,6 +71,14 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    //MARK: - Delete Section, delete data from swipe
+    
+    override func update(at indexPath: IndexPath) {
+        self.context.delete(self.categories[indexPath.row])
+        self.categories.remove(at: indexPath.row)
+    }
+    
+    
     //MARK: - Table view Data source methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -73,11 +87,22 @@ class CategoryViewController: UITableViewController {
     
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        let item = categories[indexPath.row]
-        cell.textLabel?.text = item.name
-        return cell
+//       let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
+//        cell.delegate = self
+//        
+         let item = categories[indexPath.row]
+         cell.textLabel?.text = item.name
+        
+       
+        
+        
+        cell.backgroundColor = UIColor(hexString: categories[indexPath.row].color ?? "1D9B6F")
+        
+        
+         return cell
     }
     
     
@@ -114,12 +139,7 @@ class CategoryViewController: UITableViewController {
             print("Error in Fetching the data \(error)")
         }
         tableView.reloadData()
-        
     }
-    
-    
 }
-    
-    
 
 
