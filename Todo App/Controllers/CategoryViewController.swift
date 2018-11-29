@@ -27,6 +27,8 @@ class CategoryViewController: SwipeTableViewController {
 
        
     }
+    
+    
 
    
     //MARK: - Add new Category
@@ -96,10 +98,13 @@ class CategoryViewController: SwipeTableViewController {
          let item = categories[indexPath.row]
          cell.textLabel?.text = item.name
         
+        
        
         
         
         cell.backgroundColor = UIColor(hexString: categories[indexPath.row].color ?? "1D9B6F")
+        
+        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
         
         
          return cell

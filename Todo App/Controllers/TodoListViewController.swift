@@ -8,10 +8,12 @@
 
 import UIKit
 import CoreData
+import ChameleonFramework
 
 class TodoListViewController: SwipeTableViewController {
     
 //    var defaults = UserDefaults.standard
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var itemArray = [Item]()
     var selectedCategory : Category? {
@@ -29,8 +31,49 @@ class TodoListViewController: SwipeTableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         tableView.rowHeight = 80.0
+        tableView.separatorStyle = .none
     }
     
+    // View Will apperars just after viewDidLoad() and just before the screen get loded.
+    
+    override func viewWillAppear(_ animated: Bool) {
+        
+        title = selectedCategory?.name
+        
+        if let selectedColor = selectedCategory?.color{
+            
+           updateNavBar(hexCode: selectedColor)
+            
+
+           
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(hexCode: "1D9BF6")
+    }
+    
+    
+    
+    //MARK: - Get Navigation Update
+    
+    func updateNavBar(hexCode : String) {
+        
+        navigationController?.navigationBar.barTintColor = UIColor(hexString: hexCode)
+        
+        guard let uiColor = UIColor(hexString: hexCode)  else {return}
+        
+        navigationController?.navigationBar.tintColor =  ContrastColorOf(uiColor, returnFlat: true)
+        
+        searchBar.barTintColor = UIColor(hexString: hexCode)
+        
+        if #available(iOS 11.0, *) {
+            navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(uiColor, returnFlat: true)]
+        } else {
+            // Fallback on earlier versions
+            return
+        }
+    }
     
     //MARK: - Delete Section, delete data from swipe
     
@@ -57,6 +100,14 @@ class TodoListViewController: SwipeTableViewController {
         
         cell.textLabel?.text = item.title
         
+        //to set the background colour for the cell
+        
+        cell.backgroundColor = UIColor(hexString: selectedCategory!.color!)!.darken(byPercentage: CGFloat(indexPath.row)/CGFloat(itemArray.count)
+        )
+        
+        cell.textLabel?.textColor = UIColor(contrastingBlackOrWhiteColorOn:cell.backgroundColor!, isFlat:true)
+        
+        
         //Mark Ternary Operator
         //Value = condition?return value if True:return value if False
         
@@ -64,6 +115,11 @@ class TodoListViewController: SwipeTableViewController {
         
         return cell
     }
+    
+    
+    
+    
+    
     
     //MARK- TableViewDelegate Method
     
